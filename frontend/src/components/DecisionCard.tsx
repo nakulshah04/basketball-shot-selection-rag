@@ -7,20 +7,32 @@ export default function DecisionCard({
   decision?: Decision;
   critique?: Critique;
 }) {
-  if (!decision) return null;
-
   return (
-    <div style={{ border: "1px solid #ccc", padding: 12 }}>
-      <h3>Agent Decision</h3>
-      <p><b>Shot:</b> {decision.shot}</p>
-      <p><b>Confidence:</b> {decision.confidence}</p>
-      <p>{decision.explanation}</p>
+    <section className="panel decision-panel">
+      <div className="panel-header">
+        <h2>Agent Decision</h2>
+        {critique && (
+          <span className={critique.valid ? "chip success" : "chip danger"}>
+            {critique.valid ? "Validated" : "Rejected"}
+          </span>
+        )}
+      </div>
+
+      {!decision ? (
+        <p className="muted">Waiting for the first decision...</p>
+      ) : (
+        <>
+          <div className="decision-main">
+            <strong>{decision.shot}</strong>
+            <span>{Math.round(decision.confidence * 100)}% confidence</span>
+          </div>
+          <p>{decision.explanation || "No explanation returned."}</p>
+        </>
+      )}
 
       {critique && (
-        <p style={{ color: critique.valid ? "green" : "red" }}>
-          {critique.valid ? "✔ Validated" : "✖ Rejected"} — {critique.reason}
-        </p>
+        <p className="critique">{critique.reason || "No critique reason returned."}</p>
       )}
-    </div>
+    </section>
   );
 }

@@ -13,14 +13,64 @@ An end-to-end agentic AI system that streams live game states, retrieves histori
 ## Run
 
 ```bash
-# backend
+# backend setup
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+
+# build or refresh the retrieval corpus/vector store
+python -m backend.rag.build_corpus
+python -m backend.rag.embeddings
+
+# start local model and API
 ollama serve
 uvicorn backend.app:app
 
 # frontend
 cd frontend
+npm install
 npm run dev
 ```
+
+## Configuration
+
+Runtime defaults live in `.env.example` and can be overridden in `.env`.
+
+- `OLLAMA_MODEL`: local chat model used by the decision and critic agents.
+- `OLLAMA_TEMPERATURE`: generation temperature. Keep this low for repeatable decisions.
+- `RETRIEVER_K`: number of retrieved shot examples passed into the decision prompt.
+- `MAX_AGENT_RETRIES`: maximum self-correction attempts after an invalid critique.
+- `EVENT_DELAY_SECONDS`: delay between simulated realtime events.
+- `VITE_WS_URL`: optional frontend websocket URL override.
+
+## Quality Checks
+
+```bash
+pytest
+
+cd frontend
+npm run build
+npm run lint
+```
+
+## Improvement Plan
+
+Completed in this pass:
+
+- Parse model responses into structured decision and critique objects, including fenced or extra-text JSON.
+- Add a bounded LangGraph retry loop so critic rejection cannot produce an infinite correction cycle.
+- Centralize backend settings for model, embeddings, retriever depth, vector store path, and stream timing.
+- Keep the realtime websocket alive when a single agent inference fails by sending structured error payloads.
+- Add focused backend tests for JSON parsing and retry behavior.
+- Replace the starter frontend with a typed, responsive live dashboard that exposes connection and stream errors.
+
+Recommended next steps:
+
+- Add an offline evaluation mode with mocked LLM outputs so CI can measure retrieval and validation behavior without Ollama.
+- Include metadata in Chroma documents, then retrieve/filter by location, shot clock bucket, and defender distance.
+- Add a small API endpoint for one-off decisions so the system is testable without opening a websocket stream.
+- Record evaluation runs to JSON or CSV to compare prompt/model changes over time.
 
 ## Why was this project interesting for me?
 

@@ -16,9 +16,15 @@ export interface Critique {
   reason: string;
 }
 
+export interface StreamError {
+  message: string;
+  detail?: string;
+}
+
 export interface StreamPayload {
   status?: string;
   event?: GameEvent;
   decision?: Decision | string;
   critique?: Critique | string;
+  error?: StreamError;
 }

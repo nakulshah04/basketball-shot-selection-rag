@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pandas
+langchain
+langchain-chroma
+langchain-community
+langchain-core
+langchain-ollama
+langgraph
+sentence-transformers
+websockets
+pytest

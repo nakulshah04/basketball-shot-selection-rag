@@ -1,12 +1,15 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_ollama import ChatOllama
-from dotenv import load_dotenv
-load_dotenv()
 import os
 
+from backend.config import get_settings
+from backend.utils.json_utils import normalize_critique, normalize_decision
+
+settings = get_settings()
+
 llm = ChatOllama(
-    model="llama3.1:8b",
-    temperature=0
+    model=settings.llm_model,
+    temperature=settings.llm_temperature,
 )
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -22,7 +25,7 @@ def decision_node(state):
         )
     ]
     response = llm.invoke(messages)
-    state["decision"] = response.content
+    state["decision"] = normalize_decision(response.content)
     return state
 
 def critic_node(state):
@@ -36,5 +39,5 @@ def critic_node(state):
         )
     ]
     response = llm.invoke(messages)
-    state["critique"] = response.content
+    state["critique"] = normalize_critique(response.content)
     return state

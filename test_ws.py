@@ -1,7 +1,14 @@
 import asyncio
+import os
+
+import pytest
 import websockets
 
-async def test():
+
+pytestmark = pytest.mark.integration
+
+
+async def receive_messages(limit=5):
     uri = "ws://127.0.0.1:8000/ws/realtime"
     async with websockets.connect(
         uri,
@@ -9,9 +16,26 @@ async def test():
         ping_interval=None,
     ) as websocket:
 
-        for i in range(5):
+        messages = []
+        for _ in range(limit):
             msg = await websocket.recv()
-            print(f"\nEVENT {i+1}:")
-            print(msg)
+            messages.append(msg)
+        return messages
 
-asyncio.run(test())
+
+@pytest.mark.skipif(
+    os.getenv("RUN_INTEGRATION_TESTS") != "1",
+    reason="Requires the FastAPI websocket server.",
+)
+def test_realtime_websocket_smoke():
+    messages = asyncio.run(receive_messages())
+
+    assert messages
+
+
+if __name__ == "__main__":
+    messages = asyncio.run(receive_messages())
+
+    for index, msg in enumerate(messages, start=1):
+        print(f"\nEVENT {index}:")
+        print(msg)

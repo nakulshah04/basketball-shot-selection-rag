@@ -1,7 +1,8 @@
 import pandas as pd
 
-INPUT_CSV = "backend/data/shot_data.csv"
-OUTPUT_TXT = "backend/rag/shot_corpus.txt"
+from backend.config import get_settings
+
+settings = get_settings()
 
 def row_to_text(row):
     return (
@@ -13,10 +14,10 @@ def row_to_text(row):
     )
 
 def main():
-    df = pd.read_csv(INPUT_CSV)
+    df = pd.read_csv(settings.shot_data_csv)
     texts = df.apply(row_to_text, axis=1).tolist()
 
-    with open(OUTPUT_TXT, "w") as f:
+    with open(settings.shot_corpus_txt, "w") as f:
         for t in texts:
             f.write(t + "\n")
 

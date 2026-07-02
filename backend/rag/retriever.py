@@ -1,14 +1,16 @@
 from langchain_chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
-PERSIST_DIR = "backend/rag/chroma_db"
+from backend.config import get_settings
+
+settings = get_settings()
 
 def get_retriever(k=5):
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+        model_name=settings.embedding_model
     )
     vectordb = Chroma(
-        persist_directory=PERSIST_DIR,
+        persist_directory=str(settings.chroma_persist_dir),
         embedding_function=embeddings
     )
     return vectordb.as_retriever(search_kwargs={"k": k})
