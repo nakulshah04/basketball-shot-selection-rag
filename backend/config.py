@@ -36,18 +36,16 @@ class Settings:
     retriever_k: int = _get_int("RETRIEVER_K", 5)
     max_agent_retries: int = _get_int("MAX_AGENT_RETRIES", 2)
     event_delay_seconds: float = _get_float("EVENT_DELAY_SECONDS", 2.0)
-    embedding_model: str = os.getenv(
-        "EMBEDDING_MODEL",
-        "sentence-transformers/all-MiniLM-L6-v2",
-    )
+    embedding_model: str = os.getenv("OLLAMA_EMBEDDING_MODEL", "nomic-embed-text")
+    chroma_collection: str = os.getenv("CHROMA_COLLECTION", "nba_shot_attempts")
     chroma_persist_dir: Path = Path(
         os.getenv("CHROMA_PERSIST_DIR", BASE_DIR / "rag" / "chroma_db")
     )
     shot_data_csv: Path = Path(
         os.getenv("SHOT_DATA_CSV", BASE_DIR / "data" / "shot_data.csv")
     )
-    shot_corpus_txt: Path = Path(
-        os.getenv("SHOT_CORPUS_TXT", BASE_DIR / "rag" / "shot_corpus.txt")
+    shot_corpus_jsonl: Path = Path(
+        os.getenv("SHOT_CORPUS_JSONL", BASE_DIR / "rag" / "shot_corpus.jsonl")
     )
 
 

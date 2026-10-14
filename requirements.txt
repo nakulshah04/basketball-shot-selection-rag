@@ -8,6 +8,6 @@ langchain-community
 langchain-core
 langchain-ollama
 langgraph
-sentence-transformers
+nba_api
 websockets
 pytest
