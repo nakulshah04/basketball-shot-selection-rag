@@ -21,10 +21,21 @@ export interface StreamError {
   detail?: string;
 }
 
+export interface Evidence {
+  source: string;
+  source_id: string;
+  player: string;
+  location: string;
+  shot_type: string;
+  made: boolean;
+  text: string;
+}
+
 export interface StreamPayload {
   status?: string;
   event?: GameEvent;
   decision?: Decision | string;
   critique?: Critique | string;
+  evidence?: Evidence[];
   error?: StreamError;
 }

@@ -1,14 +1,29 @@
-# Agentic Shot Selection (RAG + LangGraph)
+# Basketball Shot Selection Coach
 
-An end-to-end agentic AI system that streams live game states, retrieves historical context, makes decisions, and self-critiques in real time.
+I built this as an experiment in making an LLM useful during a basketball
+possession instead of merely conversational. Given a live game situation, it
+retrieves comparable recorded attempts, recommends a shot type, and shows the
+evidence behind that recommendation in a local dashboard.
+
+This is a portfolio prototype, not a coaching system. A good recommendation is
+only as good as the available shot data: it does not see a game, understand a
+playbook, or replace a coach's judgment.
 
 ## Architecture
 
-- **RAG**: Local embeddings (SentenceTransformers) + Chroma
+- **RAG**: Local Ollama embeddings + Chroma, with source IDs retained as evidence
 - **Agents**: LangGraph (Decision + Critic with retries)
 - **LLM**: Local (Ollama) for zero-API dependency
 - **Realtime**: FastAPI WebSockets
 - **Frontend**: React + TypeScript (live dashboard)
+
+## Data, honestly
+
+For a real corpus, use the first-party NBA Stats shot-chart endpoint via the
+included downloader; it creates a local, versioned CSV snapshot rather than
+calling NBA Stats while the app runs. The existing `shot_data.csv` is synthetic
+and is only a development fixture. See [the data notes](backend/data/README.md)
+before presenting results as historical analysis.
 
 ## Run
 
@@ -31,6 +46,12 @@ uvicorn backend.app:app
 cd frontend
 npm install
 npm run dev
+```
+
+Before building embeddings, download the local Ollama embedding model:
+
+```bash
+ollama pull nomic-embed-text
 ```
 
 ## Configuration

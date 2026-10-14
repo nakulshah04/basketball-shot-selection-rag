@@ -3,11 +3,13 @@ import { connectWebSocket } from "./services/websocket";
 import type {
   Critique,
   Decision,
+  Evidence,
   GameEvent,
   StreamError,
   StreamPayload,
 } from "./types";
 import EventCard from "./components/EventCard";
+import EvidenceCard from "./components/EvidenceCard";
 import DecisionCard from "./components/DecisionCard";
 import "./App.css";
 
@@ -30,6 +32,7 @@ function App() {
   const [decision, setDecision] = useState<Decision>();
   const [critique, setCritique] = useState<Critique>();
   const [streamError, setStreamError] = useState<StreamError>();
+  const [evidence, setEvidence] = useState<Evidence[]>([]);
   const [clientError, setClientError] = useState<string>();
 
   useEffect(() => {
@@ -58,6 +61,7 @@ function App() {
 
         if (nextDecision) setDecision(nextDecision);
         if (nextCritique) setCritique(nextCritique);
+        if (data.evidence) setEvidence(data.evidence);
       },
       onOpen: () => setConnectionState("connected"),
     });
@@ -70,7 +74,7 @@ function App() {
       <header className="topbar">
         <div>
           <p className="eyebrow">Agentic Shot Selection</p>
-          <h1>Live Decision Dashboard</h1>
+          <h1>Make the next possession count.</h1>
         </div>
         <span className={`status ${connectionState}`}>{connectionState}</span>
       </header>
@@ -92,6 +96,7 @@ function App() {
           </section>
         )}
         <DecisionCard decision={decision} critique={critique} />
+        <EvidenceCard evidence={evidence} />
       </div>
     </main>
   );
