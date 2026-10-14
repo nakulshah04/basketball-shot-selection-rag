@@ -2,6 +2,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 from backend.realtime.event_generator import event_stream
 from backend.agents.decision_graph import run_agent
 from backend.config import get_settings
+from backend.api.schemas import GameSituation
 import json
 import asyncio
 
@@ -14,14 +15,10 @@ async def realtime_endpoint(websocket: WebSocket):
 
     try:
         async for event in event_stream(delay=settings.event_delay_seconds):
-            query = (
-                f"{event['time_remaining']} seconds left, "
-                f"score difference {event['score_diff']}, "
-                f"defender {event['defender_distance']} meters away at {event['location']}"
-            )
+            situation = GameSituation(**event)
 
             try:
-                result = await asyncio.to_thread(run_agent, query)
+                result = await asyncio.to_thread(run_agent, situation.to_query())
             except Exception as exc:
                 await websocket.send_text(json.dumps({
                     "event": event,
@@ -35,7 +32,8 @@ async def realtime_endpoint(websocket: WebSocket):
             payload = {
                 "event": event,
                 "decision": result.get("decision"),
-                "critique": result.get("critique")
+                "critique": result.get("critique"),
+                "evidence": result.get("evidence", []),
             }
 
             await websocket.send_text(json.dumps(payload))

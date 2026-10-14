@@ -58,4 +58,17 @@ def run_agent(query):
         "critic_prompt": CRITIC_PROMPT
     }
 
-    return graph.invoke(state)
+    result = graph.invoke(state)
+    result["evidence"] = [
+        {
+            "source": str(doc.metadata.get("source", "unknown")),
+            "source_id": str(doc.metadata.get("source_id", "unknown")),
+            "player": str(doc.metadata.get("player", "unknown")),
+            "location": str(doc.metadata.get("location", "unknown")),
+            "shot_type": str(doc.metadata.get("shot_type", "unknown")),
+            "made": bool(doc.metadata.get("made", False)),
+            "text": doc.page_content,
+        }
+        for doc in docs
+    ]
+    return result
